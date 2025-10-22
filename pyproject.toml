@@ -1,6 +1,6 @@
 [project]
 name = "jupyter-background-keepalive"
-version = "0.1.4"
+version = "0.1.5"
 description = "Initialize a background thread that pings Jupyter so that it doesn't get culled"
 readme = "README.md"
 authors = [
