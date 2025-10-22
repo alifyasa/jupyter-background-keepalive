@@ -1,7 +1,7 @@
 [project]
 name = "jupyter-background-keepalive"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.1.1"
+description = "Initialize a background thread that pings Jupyter so that it doesn't get culled"
 readme = "README.md"
 authors = [
     { name = "Muhammad Alif Putra Yasa", email = "130131893+alifyasa@users.noreply.github.com" }
