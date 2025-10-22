@@ -36,7 +36,7 @@ def _send_hub_activity_ping():
         print(f"Keepalive Error: Failed to read or parse {runtime_file_path}: {e}")
         return False
 
-    if not all([hub_api_url, hub_user, api_token]):
+    if not all([hub_api_url, hub_user]) or not api_token:
         print("Keepalive Warning: Jupyter server info (url, token, or user) not found.")
         return False
 
