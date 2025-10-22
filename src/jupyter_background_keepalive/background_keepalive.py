@@ -36,12 +36,17 @@ def _send_hub_activity_ping():
         print(f"Keepalive Error: Failed to read or parse {runtime_file_path}: {e}")
         return False
 
-    if not all([hub_api_url, hub_user]) or not api_token:
-        print("Keepalive Warning: Jupyter server info (url, token, or user) not found.")
+    if not all([hub_api_url, hub_user]):
+        print("Keepalive Warning: Jupyter server info (url or user) not found.")
         return False
 
     activity_url = f"{hub_api_url}/users/{hub_user}/activity"
     headers = {"Authorization": f"token {api_token}"}
+
+    try:
+    headers = {}
+    if api_token:
+        headers["Authorization"] = f"token {api_token}"
 
     try:
         r = requests.post(activity_url, headers=headers, json={}, timeout=10)
