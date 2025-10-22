@@ -1,4 +1,7 @@
 import os
+import json
+import glob
+import getpass
 import requests
 import threading
 
@@ -8,13 +11,34 @@ _stop_event = threading.Event()
 
 def _send_hub_activity_ping():
     """Sends a single ping to the JupyterHub activity endpoint."""
-    hub_api_url = os.environ.get("JUPYTERHUB_API_URL")
-    hub_user = os.environ.get("JUPYTERHUB_USER")
-    api_token = os.environ.get("JUPYTERHUB_API_TOKEN")
+    jupyter_runtime_dir = os.environ.get("JUPYTER_RUNTIME_DIR")
+    if not jupyter_runtime_dir:
+        print("Keepalive Warning: JUPYTER_RUNTIME_DIR environment variable not found.")
+        return False
+
+    # Find the jpserver-XXXX.json file
+    runtime_files = glob.glob(os.path.join(jupyter_runtime_dir, "jpserver-*.json"))
+    if not runtime_files:
+        print(f"Keepalive Warning: No jpserver-*.json found in {jupyter_runtime_dir}")
+        return False
+
+    # Sort by modification time and pick the newest
+    runtime_files.sort(key=os.path.getmtime, reverse=True)
+    runtime_file_path = runtime_files[0]
+
+    try:
+        with open(runtime_file_path, "r") as f:
+            server_info = json.load(f)
+        hub_api_url = server_info.get("url")
+        api_token = server_info.get("token")
+        hub_user = getpass.getuser() # Get username using getpass
+    except Exception as e:
+        print(f"Keepalive Error: Failed to read or parse {runtime_file_path}: {e}")
+        return False
 
     if not all([hub_api_url, hub_user, api_token]):
-        print("Keepalive Warning: JupyterHub environment variables not found.")
-        return False  # Indicate failure
+        print("Keepalive Warning: Jupyter server info (url, token, or user) not found.")
+        return False
 
     activity_url = f"{hub_api_url}/users/{hub_user}/activity"
     headers = {"Authorization": f"token {api_token}"}
