@@ -31,7 +31,7 @@ def _send_hub_activity_ping():
             server_info = json.load(f)
         hub_api_url = server_info.get("url")
         api_token = server_info.get("token")
-        hub_user = getpass.getuser() # Get username using getpass
+        hub_user = getpass.getuser()  # Get username using getpass
     except Exception as e:
         print(f"Keepalive Error: Failed to read or parse {runtime_file_path}: {e}")
         return False
@@ -44,11 +44,10 @@ def _send_hub_activity_ping():
     headers = {"Authorization": f"token {api_token}"}
 
     try:
-    headers = {}
-    if api_token:
-        headers["Authorization"] = f"token {api_token}"
+        headers = {}
+        if api_token:
+            headers["Authorization"] = f"token {api_token}"
 
-    try:
         r = requests.post(activity_url, headers=headers, json={}, timeout=10)
         if r.status_code not in [200, 204]:
             print(f"Keepalive Error: Failed ping ({r.status_code})")
